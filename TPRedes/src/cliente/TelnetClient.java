@@ -11,8 +11,14 @@ import java.util.Scanner;
 public class TelnetClient {
     private String host = ClientHelper.getClientAddress();
     private Integer port = ClientHelper.getClientPort();
+
     public TelnetClient() {
         this.host = host;
+    }
+
+    public static void process(String args[]) throws IOException {
+        TelnetClient telnetClient = new TelnetClient();
+        telnetClient.getData();
     }
 
     public void getData() throws IOException {
@@ -22,7 +28,7 @@ public class TelnetClient {
 
         try {
             s.connect(new InetSocketAddress(host , port));
-            System.out.println("Connected");
+            System.out.println("Connected to server");
 
             //writer for socket
             s_out = new PrintWriter( s.getOutputStream(), true);
@@ -34,12 +40,12 @@ public class TelnetClient {
         catch (UnknownHostException e) {
             System.err.println("Don't know about host : " + host);
             System.exit(1);
+        //Sever caido o puerto invalido
         } catch (IOException e) {
-            System.out.println("Server down");
+            System.out.println("Server down or invalid port");
         }
 
-        //listener se mantiene constantemente escuchando mensajes del servidor
-        // y los imprime a la consola
+        //listener se mantiene constantemente escuchando mensajes del servido y los imprime por consola
         if (s_in !=null) {
             Listener l = new Listener(s, s_in);
 
@@ -101,10 +107,5 @@ public class TelnetClient {
             }
         }
      }
-
-    public static void process(String args[]) throws IOException {
-        TelnetClient telnetClient = new TelnetClient();
-        telnetClient.getData();
-    }
 
 }

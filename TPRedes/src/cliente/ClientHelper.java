@@ -7,14 +7,14 @@ public class ClientHelper {
     public static String getClientAddress() {
         System.out.println("Insert IP address:");
         Scanner scanner = new Scanner( System. in);
-        clientAddress = scanner. nextLine();
-        if (!clientAddress.equals("127.0.0.1")) {
+        clientAddress = scanner.nextLine();
+        if (!clientAddress.equals("127.0.0.1") && !clientAddress.equals("localhost")) {
             System.out.println("Address not valid");
         }
-        while (!clientAddress.equals("127.0.0.1")) {
+        while (!clientAddress.equals("127.0.0.1") && !clientAddress.equals("localhost")) {
             System.out.println("Insert IP address:");
-            clientAddress = scanner. nextLine();
-            if (!clientAddress.equals("127.0.0.1")) {
+            clientAddress = scanner.nextLine();
+            if (!clientAddress.equals("127.0.0.1") && !clientAddress.equals("localhost")) {
                 System.out.println("Address not valid");
             }
         }
@@ -23,7 +23,6 @@ public class ClientHelper {
     public static Integer getClientPort() {
         Scanner scanner = new Scanner( System. in);
         System.out.println("Insert Port:")   ;
-        // TODO: 6/20/19 fix string input
         if ( scanner.hasNextInt()) {
             clientPort = scanner.nextInt();
             if (clientPort == null) {
