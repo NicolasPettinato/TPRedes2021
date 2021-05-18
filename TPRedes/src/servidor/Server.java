@@ -38,18 +38,16 @@ public class Server
             {
                 Socket client = null;
                 try {
-                    client = this.server.accept();
-                } catch (IOException e) {
-                    out.println("Conetion closed");
-                }
-                out.println("server > [ Cliente nuevo ]");
-                HandleClient c = null;
-                try {
+                    client = this.server.accept();  //
+                    out.println("server > [ Cliente nuevo ]");
+                    HandleClient c = null;
                     c = new HandleClient(client);
+                    clients.add(c);
+                } catch (IOException e) {
+                    out.println("Conection closed");
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                clients.add(c);
             }
         }
     }
@@ -84,9 +82,13 @@ public class Server
         private void createMessage(){
             System.out.printf(" [ DESTINATION ] (Hint: write * to send to every user) *> ");
             user = scanner.nextLine();
-            System.out.printf(" [ MESSAGE ] *> ");
-            message = scanner.nextLine();
-            serverBroadcast(user, message);
+            if (users.contains(user) || user.equals("*")) {
+                System.out.printf(" [ MESSAGE ] *> ");
+                message = scanner.nextLine();
+                serverBroadcast(user, message);}
+            else{
+                out.println("[USER NOT FOUND]");
+            }
         }
     }
 
@@ -96,18 +98,12 @@ public class Server
             //manda a todos
             broadcast("SERVER", message);
         } else {
-            if (users.contains(user)) {
-
-                for (HandleClient c : clients) {
-                    if (c.getUserName().equals(user)) {
-                        c.sendMessage(" PRIVATE FROM SERVER ",message);
-                    }
+            for (HandleClient c : clients) {
+                if (c.getUserName().equals(user)) {
+                    c.sendMessage(" PRIVATE FROM SERVER ",message);
                 }
-                out.println("[MESSAGE SENT]");
-            }else {
-                out.println("[USER NOT FOUND]");
             }
-
+            out.println("[MESSAGE SENT]");
         }
     }
 

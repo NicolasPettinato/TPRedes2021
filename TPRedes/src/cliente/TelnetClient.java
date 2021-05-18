@@ -45,7 +45,7 @@ public class TelnetClient {
 
             Scanner scanner = new Scanner(System.in);
 
-            System.out.println("Pick a nickname: ");
+            //System.out.println("Pick a nickname: ");
             //String response;
             String message ="";
 
