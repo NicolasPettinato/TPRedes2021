@@ -8,18 +8,21 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
-public class TelnetClient {
-    private String host = ClientHelper.getClientAddress();
-    private Integer port = ClientHelper.getClientPort();
+public class Client {
+    public static String clientAddress;
+    public static Integer clientPort;
+    private String host = this.getClientAddress();
+    private Integer port = this.getClientPort();
 
-    public TelnetClient() {
+    public Client() {
         this.host = host;
     }
 
     public static void process(String args[]) throws IOException {
-        TelnetClient telnetClient = new TelnetClient();
-        telnetClient.getData();
+        Client client = new Client();
+        client.getData();
     }
+
 
     public void getData() throws IOException {
         Socket s = new Socket();
@@ -72,19 +75,20 @@ public class TelnetClient {
         }
     }
 
+    //listener se mantiene constantemente escuchando mensajes del servido y los imprime por consola
+    public class Listener extends Thread  //----------- CLASE ANIDADA ------------
+    {
+        BufferedReader s_in = null;
+        Socket s;
 
-     public class Listener extends Thread {
-         BufferedReader s_in = null;
-         Socket s;
-
-         public Listener(Socket s,BufferedReader s_in){
-             this.s_in = s_in;
-             this.s = s;
-             start();
+        public Listener(Socket s,BufferedReader s_in){
+            this.s_in = s_in;
+            this.s = s;
+            start();
         }
 
         public void run(){
-             String response;
+            String response;
             while(!s.isClosed()){
                 try {
 
@@ -106,6 +110,40 @@ public class TelnetClient {
                 }
             }
         }
-     }
+    }
 
+    //---------------------------------------------------------------------------------------
+
+    public String getClientAddress() {
+        System.out.println("Insert IP address:");
+        Scanner scanner = new Scanner( System. in);
+        clientAddress = scanner.nextLine();
+        if (!clientAddress.equals("127.0.0.1") && !clientAddress.equals("localhost")) {
+            System.out.println("Address not valid");
+        }
+        while (!clientAddress.equals("127.0.0.1") && !clientAddress.equals("localhost")) {
+            System.out.println("Insert IP address:");
+            clientAddress = scanner.nextLine();
+            if (!clientAddress.equals("127.0.0.1") && !clientAddress.equals("localhost")) {
+                System.out.println("Address not valid");
+            }
+        }
+        return clientAddress;
+    }
+
+    public Integer getClientPort() {
+        Scanner scanner = new Scanner( System. in);
+        System.out.println("Insert Port:")   ;
+        if ( scanner.hasNextInt()) {
+            clientPort = scanner.nextInt();
+            if (clientPort == null) {
+                System.out.println("Port not valid");
+            }
+        }else {
+            System.out.println("Port not valid");
+            getClientPort();
+        }
+
+        return clientPort;
+    }
 }

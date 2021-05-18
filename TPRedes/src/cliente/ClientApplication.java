@@ -4,7 +4,7 @@ public class ClientApplication {
 
 	public static void main(String[] args) {
 		try {
-			TelnetClient.process(args);
+			Client.process(args);
 		} catch (IOException e) {
 			e.printStackTrace();
 		};
