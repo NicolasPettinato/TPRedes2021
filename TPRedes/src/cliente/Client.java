@@ -8,17 +8,17 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
 
+
 public class Client {
     public static String clientAddress;
     public static Integer clientPort;
-    private String host = this.getClientAddress();
-    private Integer port = this.getClientPort();
+    private final String host = this.getClientAddress();
+    private final Integer port = this.getClientPort();
 
     public Client() {
-        this.host = host;
     }
 
-    public static void process(String args[]) throws IOException {
+    public static void process() throws IOException {
         Client client = new Client();
         client.getData();
     }
@@ -43,19 +43,18 @@ public class Client {
         catch (UnknownHostException e) {
             System.err.println("Don't know about host : " + host);
             System.exit(1);
-        //Sever caido o puerto invalido
+        //Sever caído o puerto invalido
         } catch (IOException e) {
             System.out.println("Server down or invalid port");
         }
 
         //listener se mantiene constantemente escuchando mensajes del servido y los imprime por consola
         if (s_in !=null) {
-            Listener l = new Listener(s, s_in);
+            new Listener(s, s_in);
 
             Scanner scanner = new Scanner(System.in);
 
             //System.out.println("Pick a nickname: ");
-            //String response;
             String message ="";
 
 
@@ -78,7 +77,7 @@ public class Client {
     //listener se mantiene constantemente escuchando mensajes del servido y los imprime por consola
     public class Listener extends Thread  //----------- CLASE ANIDADA ------------
     {
-        BufferedReader s_in = null;
+        BufferedReader s_in;
         Socket s;
 
         public Listener(Socket s,BufferedReader s_in){
@@ -136,7 +135,7 @@ public class Client {
         System.out.println("Insert Port:")   ;
         if ( scanner.hasNextInt()) {
             clientPort = scanner.nextInt();
-            if (clientPort == null) {
+            if (clientPort.equals(null)) {
                 System.out.println("Port not valid");
             }
         }else {

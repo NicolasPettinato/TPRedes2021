@@ -7,7 +7,7 @@ import static java.lang.System.out;
 public class Server
 {
     ArrayList<String> users = new ArrayList<>();                        //Array de names
-    ArrayList<HandleClient> clients = new ArrayList<HandleClient>();    //Array de Threads client
+    ArrayList<HandleClient> clients = new ArrayList<>();    //Array de Threads client
 
     int PORT = 3000;
     int NumClients = 10;
@@ -17,7 +17,7 @@ public class Server
         ServerSocket server = new ServerSocket(PORT,NumClients);
         out.println("Server Connected...");
         // waitConnections escucha constantemente nuevos clientes
-        WaitConnections wc = new WaitConnections(server);
+        new WaitConnections(server);
         // ServerChatter habilita mensajes desde el servidor un cliente especifico o a todos.
         new ServerChatter().start();
     }
@@ -36,17 +36,19 @@ public class Server
         public void run(){
             while( true)
             {
-                Socket client = null;
+                Socket client;
                 try {
                     client = this.server.accept();  //
                     out.println("server > [ Cliente nuevo ]");
-                    HandleClient c = null;
+                    HandleClient c;
                     c = new HandleClient(client);
                     clients.add(c);
                 } catch (IOException e) {
-                    out.println("Conection closed");
+                    out.println("Connection closed");
+                    break;
                 } catch (Exception e) {
                     e.printStackTrace();
+                    break;
                 }
             }
         }
@@ -55,7 +57,7 @@ public class Server
     // Cada cliente que entra es un hilo
     class HandleClient extends Thread       //----------- CLASE ANIDADA ------------
     {
-        String name = "";
+        String name;
         BufferedReader input;
         PrintWriter output;
 
@@ -63,7 +65,7 @@ public class Server
         {
             input = new BufferedReader(new InputStreamReader(client.getInputStream())) ;
             output = new PrintWriter (client.getOutputStream(),true);
-            output.println("Welcome to UTN's Chat Server! : Please Enter a User Name ");
+            output.println("Welcome to UTN's Chat Server! Please Enter a User Name: ");
             name  = input.readLine();
 
             out.println("** NOMBRE: " + name);
@@ -91,7 +93,7 @@ public class Server
                 while(true)
                 {
                     line = input.readLine();
-                    if (line.equals(null)) {
+                    if(line.equals(null)) {
                         out.println();
                         break;
                     }
@@ -100,7 +102,7 @@ public class Server
                     {
                         clients.remove(this);
                         users.remove(name);
-                        System.out.println(name+" Disconected");
+                        System.out.println(name+" Disconnected");
                         break;
                     }
                     else if(name.equals(line))
@@ -114,7 +116,7 @@ public class Server
             {
                 clients.remove(this);
                 users.remove(name);
-                System.out.println(name+" Disconected");
+                System.out.println(name+" Disconnected");
             }
         }
     }
@@ -139,7 +141,7 @@ public class Server
                     createMessage();
                 }
                 if (message.equals("x")) {
-                    out.println("Server Disconected");
+                    out.println("Server Disconnected");
                     System.exit(0);
                 }
                 message="";
@@ -148,14 +150,19 @@ public class Server
         }
 
         private void createMessage(){
-            System.out.printf(" [ DESTINATION ] (Hint: write * to send to every user) *> ");
-            user = scanner.nextLine();
-            if (users.contains(user) || user.equals("*")) {
-                System.out.printf(" [ MESSAGE ] *> ");
-                message = scanner.nextLine();
-                serverBroadcast(user, message);}
-            else{
-                out.println("[USER NOT FOUND]");
+            if (users.size() == 0){
+                out.println("Sorry... There aren't users connected ");
+            }
+            else {
+                out.printf(" [ DESTINATION ] (Hint: write * to send to every user) *> ");
+                user = scanner.nextLine();
+                if (users.contains(user) || user.equals("*")) {
+                    out.printf(" [ MESSAGE ] *> ");
+                    message = scanner.nextLine();
+                    serverBroadcast(user, message);
+                } else {
+                    out.println("[USER NOT FOUND]");
+                }
             }
         }
     }
@@ -167,13 +174,14 @@ public class Server
         if(user.equals("*")){
             //manda a todos
             broadcast("SERVER", message);
+            out.println("[MESSAGE SENT FOR ALL]");
         } else {
             for (HandleClient c : clients) {
                 if (c.getUserName().equals(user)) {
                     c.sendMessage(" PRIVATE FROM SERVER ",message);
+                    out.println("[MESSAGE SENT TO " +  c.getUserName() +"]");
                 }
             }
-            out.println("[MESSAGE SENT]");
         }
     }
 
